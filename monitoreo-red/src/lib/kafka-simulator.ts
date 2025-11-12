@@ -1,4 +1,4 @@
-import { NetworkNode, NetworkEvent } from "./types";
+import { NetworkNode, NetworkEvent, NodeState } from "./types";
 
 let subscribers: ((event: NetworkEvent) => void)[] = [];
 
@@ -9,14 +9,18 @@ export function subscribe(callback: (event: NetworkEvent) => void) {
 export function startKafkaSimulation(nodes: NetworkNode[]) {
   setInterval(() => {
     const node = nodes[Math.floor(Math.random() * nodes.length)];
-    const typeOptions = ["NODE_STATUS_CHANGE", "LATENCY_UPDATE", "CONNECTION_CHANGE"];
+    const typeOptions: NetworkEvent["type"][] = [
+      "NODE_STATUS_CHANGE",
+      "LATENCY_UPDATE",
+      "CONNECTION_CHANGE",
+    ];
     const type = typeOptions[Math.floor(Math.random() * typeOptions.length)];
 
     let data: any = {};
 
     if (type === "NODE_STATUS_CHANGE") {
-      const states = ["online", "degraded", "offline"];
-      node.state = states[Math.floor(Math.random() * states.length)] as any;
+      const states: NodeState[] = ["online", "degraded", "offline"];
+      node.state = states[Math.floor(Math.random() * states.length)];
       data = { newState: node.state };
     } else if (type === "LATENCY_UPDATE") {
       node.latency = Math.floor(Math.random() * 450) + 50;
